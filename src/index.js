@@ -4,14 +4,17 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import { Provider } from 'react-redux';
-import thunk from 'redux-thunk';
-import reducers from './Reducers/index';
-import {applyMiddleware, createStore} from 'redux';
-const createStoreWithMiddleware = applyMiddleware(thunk)(createStore);
+// import thunk from 'redux-thunk';
+//import reducers from './Reducers/index';
+// import {applyMiddleware, createStore, combineReducers, compose } from 'redux';
+// import { reactReduxFirebase, firebaseReducer } from 'react-redux-firebase'
+//import firebase from "firebase";
+//const createStoreWithMiddleware = applyMiddleware(thunk)(createStore);
 
+import store from "./Store/store";
 
 ReactDOM.render(
-	<Provider store={createStoreWithMiddleware(reducers)}>
+	<Provider store={(store)}>
 		<App/>
 	</Provider>
 , document.getElementById('root'));
