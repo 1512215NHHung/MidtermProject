@@ -1,30 +1,31 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { compose } from 'redux';
-import { firebaseConnect,withFirebase } from 'react-redux-firebase';
 import PropTypes from 'prop-types';
-import { withRouter } from "react-router-dom";
+import "../Styles/Homepage.css";
+import Search from "./Search";
+import { firestoreConnect } from 'react-redux-firebase';
+import ListUsers from "./ListUsers";
+import Chat from "./Chat";
 
 class Homepage extends Component {
-    // static propTypes = {
-    //     router: PropTypes.object,
-    //     auth: PropTypes.object,
-    //     firebase: PropTypes.shape({
-    //         login: PropTypes.func.isRequired,    
-    //         logout: mapStateToPropsropTypes.func.isRequired,
-    //     }),
-    // }
 
-    componentDidMount() {
-        //Authenticate user
-        const uid = this.props.auth.uid
-        this.props.firebase.auth().onAuthStateChanged((user) => {
-            //this.props.history.push('/login');
-        });
+    static propTypes = {
+        auth: PropTypes.object,
+        uid: PropTypes.string,
+        firebase: PropTypes.shape({
+            login: PropTypes.func.isRequired,    
+            logout: PropTypes.func.isRequired,
+            uid: PropTypes.string,
+            categories: PropTypes.arrayOf(PropTypes.string)
+        }),
+    }
+
+    componentDidMount(){
+        //this.getMessages();
     }
 
     onLogout(){
-        const uid = this.props.auth.uid
         this.props.firebase.logout().then(() => {
             console.log('sign out successful');
             this.props.history.push('/login')
@@ -35,13 +36,27 @@ class Homepage extends Component {
     }
 
     render() {
-        return (
-            <div>
-                <div>
-                    Hello
+
+
+        return (   
+            <div className="container clearfix">
+                <div className="button">
+                    <button 
+                        onClick={() => this.onLogout()}>Log Out
+                    </button>
                 </div>
-                <button onClick={() => this.onLogout()}>Log Out
-                </button>
+                <div className="people-list" id="people-list">
+                    <Search>
+                    </Search>
+
+                    <ListUsers>
+                    </ListUsers>
+                </div>
+
+                <div className="chat">
+                    <Chat>
+                    </Chat>
+                </div> 
             </div>
         )
     }
@@ -49,7 +64,7 @@ class Homepage extends Component {
 
 const mapStateToProps = state => {
     return { 
-        auth: state.firebase.auth 
+        auth: state.firebase.auth,
     }
 }
 
@@ -58,7 +73,17 @@ const mapDispatchToProps = () => {
 
 export default compose(
   connect(mapStateToProps, mapDispatchToProps),
-  firebaseConnect()
+  firestoreConnect((props) => {
+    if (!props.uid) return []
+    return [
+      {
+        collection: 'categories',
+        where: [
+          ['uid', '==', props.uid]
+        ]
+      }
+    ]
+  })
 )(Homepage)
 
 
