@@ -48,8 +48,6 @@ class Homepage extends Component {
     }
 
     render() {
-
-
         return (   
             <div className="container clearfix">
                 <div className="button">
@@ -86,17 +84,7 @@ const mapDispatchToProps = () => {
 
 export default compose(
   connect(mapStateToProps, mapDispatchToProps),
-  firestoreConnect((props) => {
-    if (!props.uid) return []
-    return [
-      {
-        collection: 'categories',
-        where: [
-          ['uid', '==', props.uid]
-        ]
-      }
-    ]
-  })
+  firestoreConnect()
 )(Homepage)
 
 

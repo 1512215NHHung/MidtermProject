@@ -14,6 +14,30 @@ class ListUsers extends Component {
         }
     }
 
+    componentWillMount() {
+        this.props.firebase.auth().onAuthStateChanged(user => {
+            if (user) {      
+                console.log("-----");
+                console.log(user.uid);
+                this.props.firestore.update(
+                { 
+                    collection: 'listUsers',
+                    doc: 'SF' 
+                },
+                {
+                    uid: 1,
+                }
+                );
+            }
+        }
+    )}
+
+    componentDidUpdate(){
+        console.log("here");
+        console.log(this.props);
+
+    }
+
     static propTypes = {
         auth: PropTypes.object,
         uid: PropTypes.string,
@@ -22,26 +46,14 @@ class ListUsers extends Component {
         listUsers: PropTypes.arrayOf(PropTypes.string),
         firebase: PropTypes.shape({
             login: PropTypes.func.isRequired,    
-            logout: PropTypes.func.isRequired
+            logout: PropTypes.func.isRequired,
+            update: PropTypes.func.isRequired
         }),
     }
 
     render() {
-
         var {keyword} = this.props;
-
-        //console.log("A: " + keyword);
-
-
-        // if(keyword){
-        //     console.log(this.props.listUsers);
-        //     console.log("Here")
-        //     listUsers = filter(listUsers,(user)=>{
-        //         return user.Username.toLowerCase().indexOf(keyword.toLowerCase()) !== -1;
-        //     })
-        //     console.log(listUsers);
-        // }
-        
+        console.log(this.props.listUsers);       
         var listUsers = this.props.listUsers.map((user, index)=>{
             if(user.Username.toLowerCase().indexOf(keyword.toLowerCase()) !== -1){
                 return(
@@ -73,7 +85,7 @@ class ListUsers extends Component {
     }
 }
 
-const mapStateToProps = state => {    
+const mapStateToProps = state => {
     return { 
         auth: state.firebase.auth,
         uid: state.firebase.auth.uid,
@@ -92,7 +104,6 @@ const mapDispatchToProps = () => {
 export default compose(
   connect(mapStateToProps, mapDispatchToProps),
   firestoreConnect((props) => {
-
     if (!props.uid) return []
     return [
         {
@@ -101,14 +112,7 @@ export default compose(
                 ['uid', '==', props.uid],
             ],
             orderBy: ['id', 'asc']
-        },
-        {
-            collection: 'categories',
-            where: [
-                ['uid', '==', props.uid],
-            ]
         }
-
     ]
   })
 )(ListUsers)

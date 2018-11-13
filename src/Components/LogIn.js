@@ -18,7 +18,6 @@ class LogIn extends Component {
     }
 
     componentDidMount() {
-
         this.props.firebase.auth().onAuthStateChanged(user => {
             if (user) {
                 this.props.history.push('/homepage');
